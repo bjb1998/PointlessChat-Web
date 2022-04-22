@@ -19,7 +19,8 @@ app.use(express.json())
  */
 app.use(middleware.jsonErrorInBody)
 
-app.use('/phish', middleware.checkToken, require('./routes/phish.js'))
+app.use('/auth', require('./routes/register.js'))
+app.use('/auth', require('./routes/signin.js'))
 
 
 /*
