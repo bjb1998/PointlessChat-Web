@@ -1,0 +1,3 @@
+The API key for application "bjb1998-tcss450-labs-service" is: E4133D5D267DE286B163
+The Public key for application "bjb1998-tcss450-labs-service" is: 9C0E90FD3A09E40ACB72
+Your API key is active!
