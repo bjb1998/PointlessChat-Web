@@ -18,26 +18,26 @@ router.post('/password', (request, response, next) => {
     const password = request.body.password
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
-    if(isStringProvided(password)) {
-        if(password.length <= 3){
+    if (isStringProvided(password)) {
+        if (password.length <= 3) {
             response.status(400).send({
                 message: "Password too short"
             })
             return
         }
-        if(!containsUpperCase(password)){
+        if (!containsUpperCase(password)) {
             response.status(400).send({
                 message: "Password lacking Capital letter"
             })
             return
         }
-        if(!containsNumber(password)){
+        if (!containsNumber(password)) {
             response.status(400).send({
                 message: "Password lacking Number"
             })
             return
         }
-        if(!containsSpecialChars(password)){
+        if (!containsSpecialChars(password)) {
             response.status(400).send({
                 message: "Password lacking special character"
             })
@@ -49,19 +49,56 @@ router.post('/password', (request, response, next) => {
         })
         return
     }
+})
 
-    let salt = generateSalt(32)
-    let salted_hash = generateHash(request.body.password, salt)
-    console.log(request.body.password);
-    console.log(salt)
-    console.log(salted_hash)
+router.post('/email', (request, response, next) => {
+    //Retrieve data from query params
+    const email = request.body.email
+    //Verify that the caller supplied all the parameters
+    //In js, empty strings or null values evaluate to false
+    if(isStringProvided(email)) {
+        if(email.length <= 3){
+            response.status(400).send({
+                message: "Email too short"
+            })
+            return
+        }
+        if(!containsAt(email) || !containsValidDomain(email)){
+            response.status(400).send({
+                message: "Invalid Email"
+            })
+            return
+        }
+    } else {
+        response.status(400).send({
+            message: "email not provided"
+        })
+        return
+    }
 
     //We successfully added the user!
     response.status(201).send({
         success: true,
-        message: "Password Accepted"
+        message: "Email Accepted"
     })
 })
+
+function containsAt(str){
+    const specialChars = /[`@]/;
+    return specialChars.test(str);
+}
+
+function containsValidDomain(str){
+    const domain = str.substring(str.indexOf('@') + 1)
+    const specialChars = /[`!#$%^&*()_+\-=\[\]{};':"\\|,<>\/?~]/;
+    const period = /[.]/
+    //check if the email domain has all these wacky characters
+    if(specialChars.test(domain)){
+        return false;
+    }else{ //otherwise, check if it ends with a dot
+        return !period.test(domain.charAt(domain.length - 1));
+    }
+}
 
 function containsSpecialChars(str) {
     const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
@@ -69,12 +106,12 @@ function containsSpecialChars(str) {
 }
 
 function containsNumber(str) {
-    const specialChars = /[`1234567890]/;
+    const specialChars = /[1234567890]/;
     return specialChars.test(str);
 }
 
 function containsUpperCase(str) {
-    const specialChars = /[`ABCDEFGHIJKLMNOPQRSTUVWXYZ]/;
+    const specialChars = /[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/;
     return specialChars.test(str);
 }
 
