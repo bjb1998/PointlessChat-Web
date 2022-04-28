@@ -1,3 +1,4 @@
+
 const {isStringProvided} = require("../utilities/validationUtils");
 
 
@@ -14,13 +15,13 @@ function validatePassword(password) {
 }
 
 /**
- * @api validateEmail validates the inputted email
- * @apiName validateEmail
+ * @api validateEmailInput validates the inputted email
+ * @apiName validateEmailInput
  * @apiGroup Validator
  *
  * @apiSuccess {Boolean} boolean stating whether the email is valid
  */
-function validateEmail(email){
+function validateEmailInput(email){
         return !(!isStringProvided(email) || email.length <= 3 || !containsAt(email) || !containsValidDomain(email));
 }
 
@@ -95,5 +96,5 @@ function containsUpperCase(str) {
 }
 //-----Validator Helpers-----//
 
-exports.validateEmail = validateEmail
+exports.validateEmailInput = validateEmailInput
 exports.validatePassword = validatePassword

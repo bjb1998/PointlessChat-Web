@@ -7,7 +7,7 @@ const express = require('express')
 const pool = require('../utilities').pool
 
 const validation = require('../utilities').validation
-const {validateEmail, validatePassword} = require('./validator')
+const {validateEmailInput, validatePassword} = require('./validator')
 let isStringProvided = validation.isStringProvided
 
 const generateHash = require('../utilities').generateHash
@@ -73,7 +73,7 @@ router.post('/', (request, response, next) => {
                 message: "Invalid Password"
             })
             return
-        }else if(!validateEmail(email)){
+        }else if(!validateEmailInput(email)){
             response.status(400).send({
                 message: "Invalid Email"
             })
@@ -130,7 +130,10 @@ router.post('/', (request, response, next) => {
                 success: true,
                 email: request.body.email
             })
-            sendEmail("our.email@lab.com", request.body.email, "Welcome to our App!", "Please verify your Email account.")
+            sendEmail("our.email@lab.com",
+                request.body.email,
+                "Welcome to the most mediocre app in the world!",
+                "Please verify your Email account here: https://team-6-tcss-450-web.herokuapp.com/auth/email?userId=" + request.memberid + "&hash=" + salted_hash)
         })
         .catch((error) => {
             //log the error for debugging
