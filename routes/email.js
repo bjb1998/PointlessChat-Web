@@ -13,7 +13,7 @@ router.get('/', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(hash) && isStringProvided(userId)) {
-        let retrievalQuery = `SELECT * saltedhash FROM Credentials
+        let retrievalQuery = `SELECT saltedhash FROM Credentials
                               INNER JOIN Members ON
                               Credentials.memberid=Members.memberid
                               WHERE Credentials.saltedhash=$1`
