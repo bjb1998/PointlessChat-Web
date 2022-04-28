@@ -1,93 +1,51 @@
-//express is the framework we're going to use to handle requests
-const express = require('express')
-const {pool, generateSalt, generateHash, sendEmail} = require("../utilities");
 const {isStringProvided} = require("../utilities/validationUtils");
 
-//retrieve the router object from express
-var router = express.Router()
+
+//-----Validator Functions-----//
+/**
+ * @api validatePassword validates the inputted password
+ * @apiName validatePassword
+ * @apiGroup Validator
+ *
+ * @apiSuccess {Boolean} boolean stating whether the password is valid
+ */
+function validatePassword(password) {
+    return !(!isStringProvided(password) || password.length <= 3 || !containsUpperCase(password) || !containsNumber(password) || !containsSpecialChars(password));
+}
 
 /**
- * @api {get} /weather sends a simple get request message for now
- * @apiName GetWeather
- * @apiGroup Weather
+ * @api validateEmail validates the inputted email
+ * @apiName validateEmail
+ * @apiGroup Validator
  *
- * @apiSuccess {String} simple welcome message
+ * @apiSuccess {Boolean} boolean stating whether the email is valid
  */
-router.post('/password', (request, response, next) => {
-    //Retrieve data from query params
-    const password = request.body.password
-    //Verify that the caller supplied all the parameters
-    //In js, empty strings or null values evaluate to false
-    if (isStringProvided(password)) {
-        if (password.length <= 3) {
-            response.status(400).send({
-                message: "Password too short"
-            })
-            return
-        }
-        if (!containsUpperCase(password)) {
-            response.status(400).send({
-                message: "Password lacking Capital letter"
-            })
-            return
-        }
-        if (!containsNumber(password)) {
-            response.status(400).send({
-                message: "Password lacking Number"
-            })
-            return
-        }
-        if (!containsSpecialChars(password)) {
-            response.status(400).send({
-                message: "Password lacking special character"
-            })
-            return
-        }
-    } else {
-        response.status(400).send({
-            message: "Password not provided"
-        })
-        return
-    }
-})
+function validateEmail(email){
+        return !(!isStringProvided(email) || email.length <= 3 || !containsAt(email) || !containsValidDomain(email));
+}
 
-router.post('/email', (request, response, next) => {
-    //Retrieve data from query params
-    const email = request.body.email
-    //Verify that the caller supplied all the parameters
-    //In js, empty strings or null values evaluate to false
-    if(isStringProvided(email)) {
-        if(email.length <= 3){
-            response.status(400).send({
-                message: "Email too short"
-            })
-            return
-        }
-        if(!containsAt(email) || !containsValidDomain(email)){
-            response.status(400).send({
-                message: "Invalid Email"
-            })
-            return
-        }
-    } else {
-        response.status(400).send({
-            message: "email not provided"
-        })
-        return
-    }
-
-    //We successfully added the user!
-    response.status(201).send({
-        success: true,
-        message: "Email Accepted"
-    })
-})
-
+/**
+ * @api containsAt returns whether the string contains the '@' char
+ * @apiName containsAt
+ * @apiGroup Validator
+ *
+ * @apiSuccess {Boolean} boolean stating whether the string contains the '@' char
+ */
 function containsAt(str){
     const specialChars = /[`@]/;
     return specialChars.test(str);
 }
+//-----Validator Functions-----//
 
+
+//-----Validator Helpers-----//
+/**
+ * @api containsValidDomain returns whether the email is a valid domain
+ * @apiName containsValidDomain
+ * @apiGroup Validator
+ *
+ * @apiSuccess {Boolean} boolean stating whether the email doesn't end in a '.' and doesn't have special chars
+ */
 function containsValidDomain(str){
     const domain = str.substring(str.indexOf('@') + 1)
     const specialChars = /[`!#$%^&*()_+\-=\[\]{};':"\\|,<>\/?~]/;
@@ -100,20 +58,42 @@ function containsValidDomain(str){
     }
 }
 
+/**
+ * @api containsSpecialChars checks if password contains a special char
+ * @apiName containsSpecialChars
+ * @apiGroup Validator
+ *
+ * @apiSuccess {Boolean} boolean stating whether password has a special char (/[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/)
+ */
 function containsSpecialChars(str) {
     const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
     return specialChars.test(str);
 }
 
+/**
+ * @api containsNumber checks if password contains number
+ * @apiName containsNumber
+ * @apiGroup Validator
+ *
+ * @apiSuccess {Boolean} boolean stating whether password has any number (0 - 9)
+ */
 function containsNumber(str) {
     const specialChars = /[1234567890]/;
     return specialChars.test(str);
 }
 
+/**
+ * @api containsUpperCase checks if password has a capitol letter
+ * @apiName containsUpperCase
+ * @apiGroup Validator
+ *
+ * @apiSuccess {Boolean} boolean stating whether the password has a capitol letter (A - Z)
+ */
 function containsUpperCase(str) {
     const specialChars = /[ABCDEFGHIJKLMNOPQRSTUVWXYZ]/;
     return specialChars.test(str);
 }
+//-----Validator Helpers-----//
 
-
-module.exports = router
+exports.validateEmail = validateEmail
+exports.validatePassword = validatePassword

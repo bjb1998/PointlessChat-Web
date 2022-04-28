@@ -7,6 +7,7 @@ const express = require('express')
 const pool = require('../utilities').pool
 
 const validation = require('../utilities').validation
+const {validateEmail, validatePassword} = require('./validator')
 let isStringProvided = validation.isStringProvided
 
 const generateHash = require('../utilities').generateHash
@@ -45,7 +46,10 @@ const router = express.Router()
  * @apiError (400: Email exists) {String} message "Email exists"
  *
  * @apiError (400: Other Error) {String} message "other error, see detail"
- * @apiError (400: Other Error) {String} detail Information about th error
+ * @apiError (400: Other Error) {String} detail Information about the error
+ *
+ * @apiError (400: Invalid Password) {String} bad input for password
+ * @apiError (400: Invalid Email) {String} bad input for email
  *
  */
 router.post('/', (request, response, next) => {
@@ -63,6 +67,18 @@ router.post('/', (request, response, next) => {
         && isStringProvided(username)
         && isStringProvided(email)
         && isStringProvided(password)) {
+
+        if(!validatePassword(password)){
+            response.status(400).send({
+                message: "Invalid Password"
+            })
+            return
+        }else if(!validateEmail(email)){
+            response.status(400).send({
+                message: "Invalid Email"
+            })
+            return
+        }
 
         //We're using placeholders ($1, $2, $3) in the SQL query string to avoid SQL Injection
         //If you want to read more: https://stackoverflow.com/a/8265319
