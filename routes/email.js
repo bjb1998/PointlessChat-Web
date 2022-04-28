@@ -8,8 +8,8 @@ const router = express.Router()
 const {isStringProvided} = require("../utilities/validationUtils");
 const {pool} = require("../utilities");
 router.get('/', (request, response) => {
-    const userId = request.headers.userId
-    const hash = request.headers.hash
+    const userId = request.query.userId
+    const hash = request.query.hash
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(hash) && isStringProvided(userId)) {
