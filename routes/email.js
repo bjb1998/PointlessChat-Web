@@ -7,7 +7,7 @@ const router = express.Router()
 
 const {isStringProvided} = require("../utilities/validationUtils");
 const {pool} = require("../utilities");
-router.get('/email', (request, response) => {
+router.get('/', (request, response) => {
     const userId = request.headers.userId
     const param = request.headers.hash
     //Verify that the caller supplied all the parameters
