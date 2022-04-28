@@ -9,10 +9,10 @@ const {isStringProvided} = require("../utilities/validationUtils");
 const {pool} = require("../utilities");
 router.get('/', (request, response) => {
     const userId = request.headers.userId
-    const param = request.headers.hash
+    const hash = request.headers.hash
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
-    if(isStringProvided(param)) {
+    if(isStringProvided(hash) && isStringProvided(userId)) {
         let retrievalQuery = `SELECT * saltedhash FROM Credentials
                               INNER JOIN Members ON
                               Credentials.memberid=Members.memberid
@@ -21,7 +21,7 @@ router.get('/', (request, response) => {
                                 SET Verification = 1
                                 WHERE Members.memberid = $1`
 
-        pool.query(retrievalQuery, param)
+        pool.query(retrievalQuery, hash)
             .then(result => {
                 console.log(result)
                 if (result.rowCount == 0) {
@@ -46,6 +46,10 @@ router.get('/', (request, response) => {
                         })
                     })
             })
+    }else{
+        response.status(400).send({
+            message: "Something went wrong!"
+        })
     }
 })
 

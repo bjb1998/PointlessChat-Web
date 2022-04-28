@@ -133,7 +133,7 @@ router.post('/', (request, response, next) => {
             sendEmail("our.email@lab.com",
                 request.body.email,
                 "Welcome to the most mediocre app in the world!",
-                "Please verify your Email account here: https://team-6-tcss-450-web.herokuapp.com/auth/email?userId=" + request.memberid + "&hash=" + salted_hash)
+                "Please verify your Email account here: https://team-6-tcss-450-web.herokuapp.com/email?userId=" + request.memberid + "&hash=" + salted_hash)
         })
         .catch((error) => {
             //log the error for debugging
