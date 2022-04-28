@@ -48,7 +48,9 @@ router.get('/', (request, response) => {
             })
     }else{
         response.status(400).send({
-            message: "Something went wrong!"
+            message: "Something went wrong!",
+            hash: hash,
+            userId: userId
         })
     }
 })
