@@ -21,7 +21,7 @@ router.get('/', (request, response) => {
                                 SET Verification = 1
                                 WHERE Members.memberid = $1`
 
-        pool.query(retrievalQuery, hash)
+        pool.query(retrievalQuery, [hash])
             .then(result => {
                 console.log(result)
                 if (result.rowCount == 0) {
@@ -31,7 +31,7 @@ router.get('/', (request, response) => {
                     return
                 }
 
-                pool.query(setVerifiedQuery, userId)
+                pool.query(setVerifiedQuery, [userId])
                     .then(result => {
                         console.log(result)
                         /*if (result.rowCount == 0) {
