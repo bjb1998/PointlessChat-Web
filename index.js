@@ -1,4 +1,6 @@
 //express is the framework we're going to use to handle requests
+// noinspection JSCheckFunctionSignatures
+
 const express = require('express')
 //Create a new instance of express
 const app = express()
@@ -21,9 +23,10 @@ app.use(middleware.jsonErrorInBody)
 
 app.use('/auth', require('./routes/register.js'))
 app.use('/auth', require('./routes/signin.js'))
+app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js'))
 app.use('/home', require('./routes/home.js'))
-app.use('/chat', require('./routes/chat.js'))
-app.use('/weather', require('./routes/weather.js'))
+app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
+app.use('/weather',  require('./routes/weather.js'))
 app.use('/email', require('./routes/email.js'))
 
 
