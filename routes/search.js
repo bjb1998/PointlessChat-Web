@@ -59,7 +59,7 @@ router.post('/', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(displayName)){
-        let theQuery = "SELECT * FROM MEMBERS WHERE Username LIKE ($1)"
+        let theQuery = "SELECT * FROM MEMBERS WHERE Username LIKE '%'||$1||'%'"
         let values = [displayName]
         pool.query(theQuery, values)
             .then(result => {
