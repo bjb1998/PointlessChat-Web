@@ -10,11 +10,6 @@ const validation = require('../utilities').validation
 const {validateEmailInput, validatePassword} = require('./validator')
 let isStringProvided = validation.isStringProvided
 
-const generateHash = require('../utilities').generateHash
-const generateSalt = require('../utilities').generateSalt
-
-const sendEmail = require('../utilities').sendEmail
-
 const router = express.Router()
 
 /**
@@ -55,12 +50,23 @@ const router = express.Router()
 router.post('/', (request, response) => {
 
     //Retrieve data from query params
-    const displayName = request.body.name
+    const name = request.body.name
+    const option = request.body.option
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
-    if(isStringProvided(displayName)){
-        let theQuery = "SELECT * FROM MEMBERS WHERE Username LIKE '%'||$1||'%'"
-        let values = [displayName]
+    if(isStringProvided(name)){
+        let theQuery = ""
+
+        if(option === "Email"){
+            theQuery = "SELECT * FROM MEMBERS WHERE Email LIKE '%'||$1||'%'"
+        }else if(option === "Name"){
+            theQuery = "SELECT * FROM MEMBERS WHERE CONCAT(FirstName, ' ', LastName)  LIKE '%'||$1||'%'"
+        }else {
+            theQuery = "SELECT * FROM MEMBERS WHERE Username LIKE '%'||$1||'%'"
+        }
+
+        let values = [name]
+
         pool.query(theQuery, values)
             .then(result => {
                 response.status(200).send({
