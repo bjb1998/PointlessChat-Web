@@ -29,6 +29,7 @@ app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
 app.use('/weather',  require('./routes/weather.js'))
 app.use('/email', require('./routes/email.js'))
 app.use('/search', require('./routes/search.js'))
+app.use('/contacts', require('./routes/contacts.js'))
 
 
 /*
