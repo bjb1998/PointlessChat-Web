@@ -64,7 +64,7 @@ router.post('/', (request, response) => {
         pool.query(theQuery, values)
             .then(result => {
                 response.status(200).send({
-                    message: result.rows
+                    message: result
                 })
             })
             .catch((error) => {
