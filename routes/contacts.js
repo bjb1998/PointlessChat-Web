@@ -90,11 +90,12 @@ router.post('/get', (request, response) => {
 
     //Retrieve data from query params
     const currentUserEmail = request.body.userEmail
+    const verified = request.body.verified
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(currentUserEmail)){
-        let theQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1)))"
-        let values = [currentUserEmail]
+        let theQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1))) AND Verified = $2"
+        let values = [currentUserEmail, verified]
 
         pool.query(theQuery, values)
             .then(result => {
