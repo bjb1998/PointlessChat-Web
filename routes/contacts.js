@@ -86,6 +86,44 @@ router.post('/', (request, response) => {
     }
 })
 
+router.post('/get', (request, response) => {
+
+    //Retrieve data from query params
+    const currentUserEmail = request.body.userEmail
+    //Verify that the caller supplied all the parameters
+    //In js, empty strings or null values evaluate to false
+    if(isStringProvided(currentUserEmail)){
+        let theQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1)))"
+        let values = [currentUserEmail]
+
+        pool.query(theQuery, values)
+            .then(result => {
+                if (result.rowCount === 0) {
+                    response.status(400).send({
+                        message: 'You have no contacts'
+                    })
+                }else{
+                    pool.query(theQuery, values)
+                        .then(result => {
+                            response.status(200).send({
+                                message: result
+                            })
+                        })
+                        .catch((error) => {
+                            response.status(400).send({
+                                message: "error, see detail",
+                                detail: error.detail
+                            })
+                        })
+                }
+            });
+    } else {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    }
+})
+
 router.post('/remove', (request, response) => {
 
     //Retrieve data from query params
