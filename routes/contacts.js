@@ -107,7 +107,8 @@ router.post('/get', (request, response) => {
                     pool.query(theQuery, values)
                         .then(result => {
                             response.status(200).send({
-                                message: result
+                                message: result,
+                                context: verified
                             })
                         })
                         .catch((error) => {
