@@ -94,7 +94,20 @@ router.post('/get', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(currentUserEmail)){
-        let theQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1))) AND Verified = $2"
+
+        //This Query is complicated. In short, find all the connections with the users current email, then select the ID
+        //Which isn't the current users, from there, get their info
+        let theQuery = `SELECT * FROM MEMBERS WHERE memberid IN (SELECT
+                        (CASE WHEN
+                            (MemberID_A = (SELECT memberid FROM Members WHERE email = $1))
+                                THEN MemberID_B
+                                ELSE MemberID_A
+                        END)
+                        FROM CONTACTS WHERE (Verified = $2 
+                        AND (
+                            (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1)))
+                        )))`
+        //let theQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1)) AND Verified = $2)"
         let values = [currentUserEmail, verified]
 
         pool.query(theQuery, values)
@@ -119,38 +132,6 @@ router.post('/get', (request, response) => {
                         })
                 }
             });
-    } else {
-        response.status(400).send({
-            message: "Missing required information"
-        })
-    }
-})
-
-router.post('/getFromId', (request, response) => {
-
-    //Retrieve data from query params
-    const currentUserEmail = request.body.userEmail
-    const idOne = request.body.idOne
-    const idTwo = request.body.idTwo
-    //Verify that the caller supplied all the parameters
-    //In js, empty strings or null values evaluate to false
-    if(isStringProvided(currentUserEmail)){
-        let theQuery = "SELECT * FROM Members WHERE email != $3 AND memberid IN ($1, $2)"
-        let values = [idOne, idTwo, currentUserEmail]
-
-        pool.query(theQuery, values)
-            .then(result => {
-                response.status(200).send({
-                    message: result
-                })
-            })
-            .catch((error) => {
-                response.status(400).send({
-                    message: "error, see detail",
-                    detail: error.detail
-                })
-            })
-
     } else {
         response.status(400).send({
             message: "Missing required information"
