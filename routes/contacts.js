@@ -126,6 +126,39 @@ router.post('/get', (request, response) => {
     }
 })
 
+router.post('/getFromId', (request, response) => {
+
+    //Retrieve data from query params
+    const currentUserEmail = request.body.userEmail
+    const idOne = request.body.idOne
+    const idTwo = request.body.idTwo
+    //Verify that the caller supplied all the parameters
+    //In js, empty strings or null values evaluate to false
+    if(isStringProvided(currentUserEmail)){
+        let theQuery = "SELECT * FROM Members WHERE email != $3 AND memberid IN ($1, $2)"
+        let values = [idOne, idTwo, currentUserEmail]
+
+        pool.query(theQuery, values)
+            .then(result => {
+                response.status(200).send({
+                    message: result
+                })
+            })
+            .catch((error) => {
+                response.status(400).send({
+                    message: "error, see detail",
+                    detail: error.detail
+                })
+            })
+
+    } else {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    }
+})
+
+
 router.post('/remove', (request, response) => {
 
     //Retrieve data from query params
