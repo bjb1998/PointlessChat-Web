@@ -180,5 +180,62 @@ router.post('/remove', (request, response) => {
     }
 })
 
+router.post('/accept', (request, response) => {
+
+    //Retrieve data from query params
+    const currentUserEmail = request.body.userEmail
+    const otherUserEmail = request.body.otherEmail
+    //Verify that the caller supplied all the parameters
+    //In js, empty strings or null values evaluate to false
+    if(isStringProvided(currentUserEmail) && isStringProvided(otherUserEmail)){
+        let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) AND (MemberID_B = (SELECT memberid FROM Members WHERE email = $2)))"
+        let theQuery = `UPDATE CONTACTS 
+                        SET Verified = 1
+                        WHERE (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) AND MemberID_B = (SELECT memberid FROM Members WHERE email = $2))`
+        let values = [currentUserEmail, otherUserEmail]
+
+        pool.query(checkExistsQuery, values)
+            .then(result => {
+                if (result.rowCount === 0) {
+                    response.status(400).send({
+                        message: 'Contact Does Not Exist'
+                    })
+                }else{
+                    pool.query(theQuery, values)
+                        .then(result => {
+                            response.status(200).send({
+                                message: result
+                            })
+                        })
+                        .catch((error) => {
+                            response.status(400).send({
+                                message: "error, see detail",
+                                detail: error.detail
+                            })
+                        })
+                }
+            });
+    } else {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    }
+})
+
+router.post('/getAll', (request, response) => {
+
+    //Retrieve data from query params
+    //Verify that the caller supplied all the parameters
+    //In js, empty strings or null values evaluate to false
+        let theQuery = "SELECT * FROM CONTACTS";
+
+    pool.query(theQuery)
+        .then(result => {
+            response.status(200).send({
+                message: result
+            })
+        })
+})
+
 
 module.exports = router
