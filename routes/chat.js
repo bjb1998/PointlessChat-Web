@@ -96,13 +96,41 @@ router.post('/create', (request, response) => {
             message: "Missing required information"
         })
     }
+})
 
-    /*
-    response.status(200).send({
+router.post('/get', (request, response) => {
+
+    //Retrieve data from query params
+    const userEmail = request.body.userEmail
+    //Verify that the caller supplied all the parameters
+    //In js, empty strings or null values evaluate to false
+    if(isStringProvided(userEmail)){
+        let findChatQuery = `SELECT ChatID, Name FROM Chats WHERE ChatID IN (
+                                 SELECT ChatId FROM ChatMembers 
+                                 WHERE MemberId = (
+                                    SELECT MemberId FROM Members
+                                    WHERE Email = $1
+                                 )
+                             )`
+        let values = [userEmail];
+
+        pool.query(findChatQuery, values)
+            .then(result => {
+                response.status(200).send({
                     message: result
                 })
-
-     */
+            })
+            .catch((error) => {
+                response.status(400).send({
+                    message: "error, see detail",
+                    detail: error.detail
+                })
+            })
+    } else {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    }
 })
 
 
