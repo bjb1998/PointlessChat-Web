@@ -97,7 +97,9 @@ router.post('/get', (request, response) => {
 
         //This Query is complicated. In short, find all the connections with the users current email, then select the ID
         //Which isn't the current users, from there, get their info
-        let theQuery = `SELECT *, CONTACTS.MemberID_A FROM MEMBERS, CONTACTS WHERE memberid IN (SELECT
+        let theQuery = `SELECT m.username, m.email, m.firstname, m.lastname, 
+                        (MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) AS DidSend 
+                        FROM MEMBERS m, CONTACTS WHERE memberid IN (SELECT
                         (CASE WHEN
                             (MemberID_A = (SELECT memberid FROM Members WHERE email = $1))
                                 THEN MemberID_B
@@ -106,7 +108,7 @@ router.post('/get', (request, response) => {
                         FROM CONTACTS WHERE (Verified = $2 
                         AND (
                             (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1)))
-                        )))`
+                        ))) LIMIT 1`
         let values = [currentUserEmail, verified]
 
         pool.query(theQuery, values)
