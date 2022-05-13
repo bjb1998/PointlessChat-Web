@@ -54,7 +54,7 @@ router.post('/', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(currentUserEmail) && isStringProvided(otherUserEmail)){
-        let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) AND (MemberID_B = (SELECT memberid FROM Members WHERE email = $2)))"
+        let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A IN (SELECT memberid FROM Members WHERE email IN ($1, $2)) AND (MemberID_B IN (SELECT memberid FROM Members WHERE email IN ($1, $2)))))"
         let theQuery = "INSERT INTO CONTACTS(MemberID_A, MemberID_B, Verified) VALUES((SELECT memberid FROM Members WHERE email = $1), (SELECT memberid FROM Members WHERE email = $2), 0) RETURNING PrimaryKey, MemberID_A, MemberID_B";
         let values = [currentUserEmail, otherUserEmail]
 
@@ -107,7 +107,6 @@ router.post('/get', (request, response) => {
                         AND (
                             (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1)))
                         )))`
-        //let theQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) OR (MemberID_B = (SELECT memberid FROM Members WHERE email = $1)) AND Verified = $2)"
         let values = [currentUserEmail, verified]
 
         pool.query(theQuery, values)
@@ -147,7 +146,13 @@ router.post('/info', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(currentUserEmail) && isStringProvided(otherUserEmail)){
-        let theQuery = "SELECT * FROM CONTACTS WHERE (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) AND MemberID_B = (SELECT memberid FROM Members WHERE email = $2))"
+        let theQuery = `SELECT CASE WHEN EXISTS(
+                        SELECT * FROM CONTACTS WHERE 
+                        (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) 
+                        AND MemberID_B = (SELECT memberid FROM Members WHERE email = $2))
+                        )
+                        THEN CAST(1 AS BIT)
+                        ELSE CAST(0 AS BIT) END`
         let values = [currentUserEmail, otherUserEmail]
 
         pool.query(theQuery, values)
@@ -178,8 +183,8 @@ router.post('/remove', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(currentUserEmail) && isStringProvided(otherUserEmail)){
-        let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) AND (MemberID_B = (SELECT memberid FROM Members WHERE email = $2)))"
-        let theQuery = "DELETE FROM CONTACTS WHERE (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) AND MemberID_B = (SELECT memberid FROM Members WHERE email = $2))"
+        let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A IN (SELECT memberid FROM Members WHERE email IN ($1, $2)) AND (MemberID_B IN (SELECT memberid FROM Members WHERE email IN ($1, $2)))))"
+        let theQuery = "DELETE FROM CONTACTS WHERE ((MemberID_A IN (SELECT memberid FROM Members WHERE email IN ($1, $2)) AND (MemberID_B IN (SELECT memberid FROM Members WHERE email IN ($1, $2)))))"
         let values = [currentUserEmail, otherUserEmail]
 
         pool.query(checkExistsQuery, values)
@@ -218,7 +223,7 @@ router.post('/accept', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(currentUserEmail) && isStringProvided(otherUserEmail)){
-        let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A = (SELECT memberid FROM Members WHERE email = $1)) AND (MemberID_B = (SELECT memberid FROM Members WHERE email = $2)))"
+        let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A IN (SELECT memberid FROM Members WHERE email IN ($1, $2)) AND (MemberID_B IN (SELECT memberid FROM Members WHERE email IN ($1, $2)))))"
         let theQuery = `UPDATE CONTACTS 
                         SET Verified = 1
                         WHERE (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) AND MemberID_B = (SELECT memberid FROM Members WHERE email = $2))`
@@ -250,21 +255,6 @@ router.post('/accept', (request, response) => {
             message: "Missing required information"
         })
     }
-})
-
-router.post('/getAll', (request, response) => {
-
-    //Retrieve data from query params
-    //Verify that the caller supplied all the parameters
-    //In js, empty strings or null values evaluate to false
-        let theQuery = "SELECT * FROM CONTACTS";
-
-    pool.query(theQuery)
-        .then(result => {
-            response.status(200).send({
-                message: result
-            })
-        })
 })
 
 
