@@ -191,7 +191,7 @@ router.post('/accept', (request, response) => {
         let checkExistsQuery = "SELECT * FROM CONTACTS WHERE ((MemberID_A IN (SELECT memberid FROM Members WHERE email IN ($1, $2)) AND (MemberID_B IN (SELECT memberid FROM Members WHERE email IN ($1, $2)))))"
         let theQuery = `UPDATE CONTACTS 
                         SET Verified = 1
-                        WHERE (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) AND MemberID_B = (SELECT memberid FROM Members WHERE email = $2))`
+                        WHERE ((MemberID_A IN (SELECT memberid FROM Members WHERE email IN ($1, $2)) AND (MemberID_B IN (SELECT memberid FROM Members WHERE email IN ($1, $2))))`
         let values = [currentUserEmail, otherUserEmail]
 
         pool.query(checkExistsQuery, values)
