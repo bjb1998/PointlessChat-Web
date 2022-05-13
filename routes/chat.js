@@ -56,26 +56,39 @@ router.post('/create', (request, response) => {
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(userEmail) && isStringProvided(otherEmail)){
-        let creationQuery = "INSERT INTO CHATS(name) VALUES('Cool chat') RETURNING chatid"
+        let getNamesQuery = "SELECT username FROM MEMBERS WHERE EMAIL IN ($1, $2)"
+        let values = [userEmail, otherEmail]
 
-        console.log("Doing creationQuery...")
-        pool.query(creationQuery)
-            .then(result => {
-                chatId = result.rows[0].chatid
-                let insertionQuery = `INSERT INTO 
+        pool.query(getNamesQuery, values)
+            .then (result => {
+                const chatName = 'Chat between ' + result.rows[0].username + ' and ' + result.rows[1].username
+                let creationQuery = "INSERT INTO CHATS(name) VALUES($1) RETURNING chatid"
+                let name = [chatName]
+                pool.query(creationQuery, name)
+                    .then(result => {
+                        chatId = result.rows[0].chatid
+                        let insertionQuery = `INSERT INTO 
                             ChatMembers(ChatId, MemberId)
                             SELECT $1, Members.MemberId
                             FROM Members
                             WHERE Members.Email=$2
                                 OR Members.Email=$3
                             RETURNING *;`
-                let values = [chatId, userEmail, otherEmail]
+                        let values = [chatId, userEmail, otherEmail]
 
-                pool.query(insertionQuery, values)
-                    .then(result => {
-                        response.status(200).send({
-                            message: result
-                        })
+                        pool.query(insertionQuery, values)
+                            .then(result => {
+                                response.status(200).send({
+                                    message: result
+                                })
+                            })
+                            .catch((error) => {
+                                response.status(400).send({
+                                    message: "error, see detail",
+                                    detail: error.detail
+                                })
+                            })
+
                     })
                     .catch((error) => {
                         response.status(400).send({
@@ -83,18 +96,14 @@ router.post('/create', (request, response) => {
                             detail: error.detail
                         })
                     })
-
             })
-            .catch((error) => {
-                response.status(400).send({
-                    message: "error, see detail",
-                    detail: error.detail
-                })
-            })
-    } else {
+    }else{
         response.status(400).send({
             message: "Missing required information"
         })
+
+
+
     }
 })
 
