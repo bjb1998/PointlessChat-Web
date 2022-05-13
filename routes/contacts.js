@@ -97,7 +97,7 @@ router.post('/get', (request, response) => {
 
         //This Query is complicated. In short, find all the connections with the users current email, then select the ID
         //Which isn't the current users, from there, get their info
-        let theQuery = `SELECT * FROM MEMBERS WHERE memberid IN (SELECT
+        let theQuery = `SELECT *, CONTACTS.MemberID_A FROM MEMBERS, CONTACTS WHERE memberid IN (SELECT
                         (CASE WHEN
                             (MemberID_A = (SELECT memberid FROM Members WHERE email = $1))
                                 THEN MemberID_B
@@ -130,42 +130,6 @@ router.post('/get', (request, response) => {
                             })
                         })
                 }
-            });
-    } else {
-        response.status(400).send({
-            message: "Missing required information"
-        })
-    }
-})
-
-router.post('/info', (request, response) => {
-
-    //Retrieve data from query params
-    const currentUserEmail = request.body.userEmail
-    const otherUserEmail = request.body.otherEmail
-    //Verify that the caller supplied all the parameters
-    //In js, empty strings or null values evaluate to false
-    if(isStringProvided(currentUserEmail) && isStringProvided(otherUserEmail)){
-        let theQuery = `SELECT CASE WHEN EXISTS(
-                        SELECT * FROM CONTACTS WHERE 
-                        (MemberID_A = (SELECT memberid FROM Members WHERE email = $1) 
-                        AND MemberID_B = (SELECT memberid FROM Members WHERE email = $2))
-                        )
-                        THEN CAST(1 AS BIT)
-                        ELSE CAST(0 AS BIT) END`
-        let values = [currentUserEmail, otherUserEmail]
-
-        pool.query(theQuery, values)
-            .then(result => {
-                response.status(200).send({
-                    message: result
-                })
-            })
-            .catch((error) => {
-                response.status(400).send({
-                    message: "error, see detail",
-                    detail: error.detail
-                })
             });
     } else {
         response.status(400).send({
