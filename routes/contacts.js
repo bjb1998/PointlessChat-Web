@@ -12,38 +12,25 @@ let isStringProvided = validation.isStringProvided
 const router = express.Router()
 
 /**
- * @api {post} /auth Request to register a user
- * @apiName PostAuth
- * @apiGroup Auth
+ * @api {post} /contacts Create a new contact
+ * @apiName ContactCreate
+ * @apiGroup contacts
  *
- * @apiParam {String} first a users first name
- * @apiParam {String} last a users last name
- * @apiParam {String} email a users email *unique
- * @apiParam {String} password a users password
- * @apiParam {String} [username] a username *unique, if none provided, email will be used
+ * @apiParam {String} userEmail the current users email address
+ * @apiParam {String} otherEmail the 2nd users email address
  *
  * @apiParamExample {json} Request-Body-Example:
  *  {
- *      "first":"Charles",
- *      "last":"Bryan",
- *      "email":"cfb3@fake.email",
- *      "password":"test12345"
+ *      "userEmail":"email1@test.com",
+ *      "otherEmail":"email2@test.com"
  *  }
  *
- * @apiSuccess (Success 201) {boolean} success true when the name is inserted
- * @apiSuccess (Success 201) {String} email the email of the user inserted
+ * @apiSuccess (Success 201) {boolean} return the created contact
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  *
- * @apiError (400: Username exists) {String} message "Username exists"
- *
- * @apiError (400: Email exists) {String} message "Email exists"
- *
  * @apiError (400: Other Error) {String} message "other error, see detail"
  * @apiError (400: Other Error) {String} detail Information about the error
- *
- * @apiError (400: Invalid Password) {String} bad input for password
- * @apiError (400: Invalid Email) {String} bad input for email
  *
  */
 router.post('/', (request, response) => {
@@ -86,6 +73,28 @@ router.post('/', (request, response) => {
     }
 })
 
+/**
+ * @api {post} /contacts get the contacts of a user, verified or not
+ * @apiName ContactsGet
+ * @apiGroup contacts
+ *
+ * @apiParam {String} userEmail the current users email address
+ * @apiParam {Integer} verified for if the contact is validated. 1 is validated, 0 is not validated
+ *
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "userEmail":"email1@test.com",
+ *      "verfied":0
+ *  }
+ *
+ * @apiSuccess (Success 201) {boolean} return the contacts of the user with the verification status
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about the error
+ *
+ */
 router.post('/get', (request, response) => {
 
     //Retrieve data from query params
@@ -140,6 +149,28 @@ router.post('/get', (request, response) => {
 })
 
 
+/**
+ * @api {post} /contacts Remove a contact
+ * @apiName ContactRemove
+ * @apiGroup contacts
+ *
+ * @apiParam {String} userEmail the current users email address
+ * @apiParam {String} otherEmail the 2nd users email address
+ *
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "userEmail":"email1@test.com",
+ *      "otherEmail":"email2@test.com"
+ *  }
+ *
+ * @apiSuccess (Success 201) {boolean} return the removed contact
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about the error
+ *
+ */
 router.post('/remove', (request, response) => {
 
     //Retrieve data from query params
@@ -180,6 +211,28 @@ router.post('/remove', (request, response) => {
     }
 })
 
+/**
+ * @api {post} /contacts Verify a contact
+ * @apiName ContactCreate
+ * @apiGroup contacts
+ *
+ * @apiParam {String} userEmail the current users email address
+ * @apiParam {String} otherEmail the 2nd users email address
+ *
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "userEmail":"email1@test.com",
+ *      "otherEmail":"email2@test.com"
+ *  }
+ *
+ * @apiSuccess (Success 201) {boolean} return the verified contact
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about the error
+ *
+ */
 router.post('/accept', (request, response) => {
 
     //Retrieve data from query params

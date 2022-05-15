@@ -7,6 +7,29 @@ const router = express.Router()
 
 const {isStringProvided} = require("../utilities/validationUtils");
 const {pool} = require("../utilities");
+
+/**
+ * @api {get} /email verify a users email
+ * @apiName emailVerify
+ * @apiGroup email
+ *
+ * @apiParam {String} userId the registered users userId
+ * @apiParam {String} hash the salted hash of the user
+ *
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "userId":"123",
+ *      "hash":"gnvretyugh45789vt4ug"
+ *  }
+ *
+ * @apiSuccess (Success 201) {boolean} returns response saying email is validated
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about the error
+ *
+ */
 router.get('/', (request, response) => {
     const userId = request.query.userId
     const hash = request.query.hash

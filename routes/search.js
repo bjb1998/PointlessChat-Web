@@ -13,38 +13,25 @@ let isStringProvided = validation.isStringProvided
 const router = express.Router()
 
 /**
- * @api {post} /auth Request to register a user
- * @apiName PostAuth
- * @apiGroup Auth
+ * @api {post} /search search for users with the given parameters
+ * @apiName ContactSearch
+ * @apiGroup search
  *
- * @apiParam {String} first a users first name
- * @apiParam {String} last a users last name
- * @apiParam {String} email a users email *unique
- * @apiParam {String} password a users password
- * @apiParam {String} [username] a username *unique, if none provided, email will be used
+ * @apiParam {String} name the string to search by
+ * @apiParam {String} option the field to search by (email, username, firstname + lastname)
  *
  * @apiParamExample {json} Request-Body-Example:
  *  {
- *      "first":"Charles",
- *      "last":"Bryan",
- *      "email":"cfb3@fake.email",
- *      "password":"test12345"
+ *      "userEmail":"TheBestUsernameEver123",
+ *      "otherEmail":"username"
  *  }
  *
- * @apiSuccess (Success 201) {boolean} success true when the name is inserted
- * @apiSuccess (Success 201) {String} email the email of the user inserted
+ * @apiSuccess (Success 201) {boolean} return the search query results
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  *
- * @apiError (400: Username exists) {String} message "Username exists"
- *
- * @apiError (400: Email exists) {String} message "Email exists"
- *
  * @apiError (400: Other Error) {String} message "other error, see detail"
  * @apiError (400: Other Error) {String} detail Information about the error
- *
- * @apiError (400: Invalid Password) {String} bad input for password
- * @apiError (400: Invalid Email) {String} bad input for email
  *
  */
 router.post('/', (request, response) => {

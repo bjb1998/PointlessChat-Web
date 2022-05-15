@@ -1,5 +1,11 @@
 const nodemailer = require('nodemailer')
 
+/**
+ * TTransporter for the email via nodemailer
+ * @param {string} service the service to send from, in this case gmail
+ * @param {string} user the email address to send from
+ * @param {string} pass the password to log in to the email
+ */
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -8,6 +14,12 @@ const transporter = nodemailer.createTransport({
     }
 })
 
+/**
+ * Creates a salted and hashed string of hexadecimal characters. Used to encrypt
+ * "safely" store user passwords.
+ * @param {string} receiver the person to send the email to
+ * @param {string} message the contents of the the email to be sent
+ */
 let sendEmail = (receiver, message) => {
 
     const emailParams = {
