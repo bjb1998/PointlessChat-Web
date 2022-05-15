@@ -64,9 +64,8 @@ router.get('/', (request, response) => {
                             return
                         }*/
 
-                        response.status(200).send({
-                            message: "Email validated!"
-                        })
+                        response.status(200).set('Content-Type', 'text/html');
+                        response.status(200).send(Buffer.from('<h2>CONGRATS!! YOUR EMAIL IS VERIFIED</h2>'));
                     })
             })
     }else{
