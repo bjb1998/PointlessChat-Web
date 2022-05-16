@@ -98,14 +98,14 @@ router.post("/", (request, response, next) => {
     //add the message to the database
     let insert = `INSERT INTO Messages(ChatId, Message, MemberId)
                   VALUES($1, $2, $3) 
-                  RETURNING PrimaryKey AS MessageId, ChatId, Message, MemberId AS email, TimeStamp`
+                  RETURNING PrimaryKey AS MessageId, ChatId, Message, MemberId AS username, TimeStamp`
     let values = [request.body.chatId, request.body.message, request.decoded.memberid]
     pool.query(insert, values)
         .then(result => {
             if (result.rowCount == 1) {
                 //insertion success. Attach the message to the Response obj
                 response.message = result.rows[0]
-                response.message.email = request.decoded.email
+                response.message.username = request.decoded.username
                 //Pass on to next to push
                 next()
             } else {
@@ -129,7 +129,7 @@ router.post("/", (request, response, next) => {
     let values = [request.body.chatId]
     pool.query(query, values)
         .then(result => {
-            console.log(request.decoded.email)
+            console.log(request.decoded.username)
             console.log(request.body.message)
             result.rows.forEach(entry =>
                 msg_functions.sendMessageToIndividual(
@@ -163,7 +163,7 @@ router.post("/", (request, response, next) => {
  * @apiSuccess {Number} rowCount the number of messages returned
  * @apiSuccess {Object[]} messages List of massages in the message table
  * @apiSuccess {String} messages.messageId The id for this message
- * @apiSuccess {String} messages.email The email of the user who posted this message
+ * @apiSuccess {String} messages.username The username of the user who posted this message
  * @apiSuccess {String} messages.message The message text
  * @apiSuccess {String} messages.timestamp The timestamp of when this message was posted
  *
