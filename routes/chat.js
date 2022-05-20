@@ -149,5 +149,76 @@ router.post('/get', (request, response) => {
     }
 })
 
+/**
+ * @api {post} /chat delete a given chat ID
+ * @apiName ChatDelete
+ * @apiGroup chat
+ *
+ * @apiParam {Integer} the chat ID to delete
+ *
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "userEmail":"email1@test.com"
+ *  }
+ *
+ * @apiSuccess (Success 201) {boolean} return the chats the user is in
+ *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about the error
+ *
+ */
+router.post('/delete', (request, response) => {
+
+    //Retrieve data from query params
+    const currentchatId= request.body.chatId
+    //Verify that the caller supplied all the parameters
+    //In js, empty strings or null values evaluate to false
+    if(Number.isInteger(currentchatId)){
+
+        let deleteMessageQuery = `DELETE FROM MESSAGES WHERE ChatID = $1`
+        let deleteChatMembersQuery = `DELETE FROM ChatMembers WHERE ChatID = $1`
+        let deleteChatQuery = `DELETE FROM Chats WHERE ChatID = $1`
+
+        let value = [currentchatId];
+
+        pool.query(deleteMessageQuery, value)
+            .then(result => {
+                pool.query(deleteChatMembersQuery, value)
+                    .then(result => {
+                        pool.query(deleteChatQuery, value)
+                            .then(result => {
+                                response.status(200).send({
+                                    message: result
+                                })
+                            })
+                            .catch((error) => {
+                                response.status(400).send({
+                                    message: "error, see detail",
+                                    detail: error.detail
+                                })
+                            })
+                    })
+                    .catch((error) => {
+                        response.status(400).send({
+                            message: "error, see detail",
+                            detail: error.detail
+                        })
+                    })
+            })
+            .catch((error) => {
+                response.status(400).send({
+                    message: "error, see detail",
+                    detail: error.detail
+                })
+            })
+    } else {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    }
+})
+
 
 module.exports = router
