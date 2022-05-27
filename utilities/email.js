@@ -7,11 +7,16 @@ const nodemailer = require('nodemailer')
  * @param {string} pass the password to log in to the email
  */
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'mail.yahoo.com',
+    service:'Yahoo',
+    secure: false,
+    port: 587,
     auth: {
-        user: 'tcssrocks@gmail.com',
-        pass: '1a18886587c2'
-    }
+        user: 'tcssrocks',
+        pass: 'mphltgyphdrchpbh'
+    },
+    debug: false,
+    logger: true
 })
 
 /**
@@ -23,22 +28,22 @@ const transporter = nodemailer.createTransport({
 let sendEmail = (receiver, message) => {
 
     const emailParams = {
-        form:'tcssrocks@gmail.com',
+        from:'tcssrocks@yahoo.com',
         to: receiver,
         subject: 'Confirm your email for some dumb app',
         text: message
     }
 
     transporter.sendMail(emailParams, function(error, info){
-       if(error){
-           console.log(error);
-       }else{
-           console.log("Email sent!");
-       }
+        if(error){
+            console.log(error);
+        }else{
+            console.log("Email sent!");
+        }
     });
 
 }
 
-module.exports = { 
+module.exports = {
     sendEmail
 }
