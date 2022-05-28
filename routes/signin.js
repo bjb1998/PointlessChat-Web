@@ -71,10 +71,10 @@ router.get('/', (request, response, next) => {
         })
     }
 }, (request, response) => {
-    const theQuery = `SELECT saltedhash, salt, Credentials.memberid FROM Credentials
+    const theQuery = `SELECT saltedhash, salt, Members.memberid, Members.verification FROM Credentials
                       INNER JOIN Members ON
                       Credentials.memberid=Members.memberid 
-                      WHERE Members.email=$1`
+                      WHERE Members.email=$1`;
     const values = [request.auth.email]
     pool.query(theQuery, values)
         .then(result => {
@@ -84,7 +84,13 @@ router.get('/', (request, response, next) => {
                 })
                 return
             }
-
+            if (result.rows[0].verification == 0) {
+                response.status(401).send({
+                    message:
+                        "Please verify account",
+                })
+                return
+            }
             //Retrieve the salt used to create the salted-hash provided from the DB
             let salt = result.rows[0].salt
 

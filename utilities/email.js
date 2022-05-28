@@ -12,8 +12,8 @@ const transporter = nodemailer.createTransport({
     secure: false,
     port: 587,
     auth: {
-        user: 'tcssrocks',
-        pass: 'mphltgyphdrchpbh'
+        user: 'tcssrocks59',
+        pass: 'vavrweluyqcpewlu'
     },
     debug: false,
     logger: true
@@ -28,7 +28,7 @@ const transporter = nodemailer.createTransport({
 let sendEmail = (receiver, message) => {
 
     const emailParams = {
-        from:'tcssrocks@yahoo.com',
+        from:'tcssrocks59@yahoo.com',
         to: receiver,
         subject: 'Confirm your email for some dumb app',
         text: message
