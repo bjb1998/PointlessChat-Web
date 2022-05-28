@@ -6,14 +6,12 @@ const nodemailer = require('nodemailer')
  * @param {string} user the email address to send from
  * @param {string} pass the password to log in to the email
  */
+//I hate setting up Oauth so much i switch to Yandex
 const transporter = nodemailer.createTransport({
-    host: 'mail.yahoo.com',
-    service:'Yahoo',
-    secure: false,
-    port: 587,
+    service:'gmail',
     auth: {
-        user: 'tcssrocks59',
-        pass: 'vavrweluyqcpewlu'
+        user: 'tcssrocks@gmail.com',
+        pass: 'ijmuxadyeowaeopv'
     },
     debug: false,
     logger: true
@@ -28,7 +26,7 @@ const transporter = nodemailer.createTransport({
 let sendEmail = (receiver, message) => {
 
     const emailParams = {
-        from:'tcssrocks59@yahoo.com',
+        from:'tcssrocks@gmail.com',
         to: receiver,
         subject: 'Confirm your email for some dumb app',
         text: message

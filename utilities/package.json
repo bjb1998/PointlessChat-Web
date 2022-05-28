@@ -1,4 +1,1 @@
-{ 
-    "name" : "utilities",
-    "main" : "./exports.js" 
-}
+{"name":"utilities","main":"./exports.js","dependencies":{"nodemailer-smtp-transport":"^2.7.4"}}
