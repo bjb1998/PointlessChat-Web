@@ -40,7 +40,7 @@ function containsAt(str){
 
 
 //-----Validator Helpers-----//
-/**
+/**https://team-6-tcss-450-web.herokuapp.com
  * @api containsValidDomain returns whether the email is a valid domain
  * @apiName containsValidDomain
  * @apiGroup Validator
@@ -49,7 +49,7 @@ function containsAt(str){
  */
 function containsValidDomain(str){
     const domain = str.substring(str.indexOf('@') + 1)
-    const specialChars = /[`!#$%^&*()_+\-=\[\]{};':"\\|,<>\/?~]/;
+    const specialChars = /[`!#$%^&*()_\-=\[\]{};':"\\|,<>\/?~]/;
     const period = /[.]/
     //check if the email domain has all these wacky characters
     if(specialChars.test(domain)){
